@@ -8,7 +8,9 @@ that simple.
 
 There is one requirement for spockets and that is the ActionPool.
 This just allows spockets to use a thread pool for executing
-blocks so you don't end up having to wait on slow blocks.
+blocks so you don't end up having to wait on slow blocks. You
+can even provide your own pool for spockets to use, so all the
+action can stay in one local pool.
 
 install (easy):
 
