@@ -25,3 +25,7 @@ gem install spockets-x.x.x.gem
 
 It has RDocs. They are where ever your rubygems installed them.
 They will probably be helpful to look over.
+
+NOTE: Still testing after moving to its own library
+      Probably (most likely) still a few bugs that I
+      should have fixed in the next day or so
