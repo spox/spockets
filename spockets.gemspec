@@ -10,6 +10,7 @@ spec = Gem::Specification.new do |s|
     s.extra_rdoc_files  = %w(README)
     s.files             = Dir['**/*']
     s.require_paths     = %w(lib)
+    s.add_dependency 'ActionPool'
     s.homepage          = %q(http://dev.modspox.com)
     description         = []
 end
