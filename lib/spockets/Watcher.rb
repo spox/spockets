@@ -1,12 +1,17 @@
 require 'actionpool'
+require 'iconv'
 
 module Spockets
     class Watcher
 
         # sockets:: socket list
+        # clean:: clean UTF8 strings
+        # pool:: ActionPool to use
         # Creates a new watcher for sockets
-        def initialize(sockets=nil, pool=nil)
+        def initialize(sockets=nil, clean=false, pool=nil)
             @runner = nil
+            @clean = clean
+            @ic = @clean ? Iconv.new('UTF-8//IGNORE', 'UTF-8') : nil
             @sockets = sockets
             @stop = true
             @pool = pool.nil? ? ActionPool::Pool.new : pool
@@ -31,6 +36,11 @@ module Spockets
             !@stop
         end
         
+        # clean incoming strings
+        def clean?
+            @clean
+        end
+        
         private
         
         def watch(sockets)
@@ -41,6 +51,10 @@ module Spockets
                     @sockets[sock].each{|b| @pool.process{ b.call(string)}}
                 end
             end
+        end
+        
+        def untaint(s)
+            @ic.iconv(s + ' ')[0..-2]
         end
     end
 end
