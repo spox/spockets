@@ -14,4 +14,10 @@ module Spockets
         end
     end
 
+    class AlreadyRunning < Exception
+    end
+    
+    class NotRunning < Exception
+    end
+    
 end
