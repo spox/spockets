@@ -1,4 +1,5 @@
 require 'actionpool'
+require 'actionpool/Exceptions'
 require 'iconv'
 
 module Spockets
@@ -19,15 +20,15 @@ module Spockets
 
         # start the watcher
         def start
-            populate_sockets
             @stop = false
-            @runner = Thread.new{ watch(@sockets.keys) } if @runner.nil?
+            @runner = Thread.new{watch(@sockets.keys)} if @runner.nil?
         end
 
         # stop the watcher
         def stop
             @stop = true
-            @runner.join
+            @runner.join(0.1)
+            @runner.kill unless @runner.alive?
             @runner = nil
         end
 
@@ -46,9 +47,15 @@ module Spockets
         def watch(sockets)
             until(@stop)
                 resultset = Kernel.select(sockets, nil, nil, nil)
-                resultset[0].each do |socket|
-                    string = clean? ? untaint(sock.gets) : sock.gets
-                    @sockets[sock].each{|b| @pool.process{ b.call(string)}}
+                for sock in resultset[0]
+                    string = sock.gets
+                    if(sock.closed? || string.nil?)
+                        @sockets.delete(sock)
+                        @pool.process{ stop;start}
+                    else
+                        string = clean? ? untaint(string) : string
+                        @sockets[sock].each{|b| @pool.process{ b.call(string)}}
+                    end
                 end
             end
         end
