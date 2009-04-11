@@ -6,10 +6,11 @@ module Spockets
     class Spockets
 
         # pool:: ActionPool if you would like to consolidate
+        # clean:: Clean string
         # creates a new holder
-        def initialize(pool=nil)
+        def initialize(pool=nil, clean=false)
             @sockets = {}
-            @watcher = Watcher.new(pool)
+            @watcher = Watcher.new(@sockets, clean, pool)
         end
 
         # socket:: socket to listen to
@@ -19,7 +20,11 @@ module Spockets
         # for processing
         def add(socket, &block)
             raise DuplicateSocket.new(socket) if @sockets.has_key?(socket)
-            stop
+            begin
+                stop
+            rescue NotRunning
+                # do nothing
+            end
             @sockets[socket] = [block]
             start
         end
@@ -37,7 +42,11 @@ module Spockets
         # Removes socket from list
         def remove(socket)
             raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
-            stop
+            begin
+                stop
+            rescue NotRunning
+                # do nothing
+            end
             @sockets.delete(socket)
             start
         end
