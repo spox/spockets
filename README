@@ -26,6 +26,48 @@ gem install spockets-x.x.x.gem
 It has RDocs. They are where ever your rubygems installed them.
 They will probably be helpful to look over.
 
-NOTE: Still testing after moving to its own library
-      Probably (most likely) still a few bugs that I
-      should have fixed in the next day or so
+Examples are usually helpful, so here we go:
+
+Code:
+
+require 'socket'
+require 'spockets'
+spockets = Spockets::Spockets.new
+
+s = []
+2.times do |i|
+    se = TCPServer.new(3000 + i)
+    s << se.accept
+puts "Socket: #{s[i]}"
+    spockets.add(s[i]){|string| puts "#{s[i]}: #{string}" }
+end
+sleep
+
+Connecting:
+
+> telnet 192.168.0.95 3000
+Trying 192.168.0.95...
+Connected to 192.168.0.95.
+Escape character is '^]'.
+goodbyeworld
+^]
+telnet> quit
+Connection closed.
+
+> telnet 192.168.0.95 3001
+Trying 192.168.0.95...
+Connected to 192.168.0.95.
+Escape character is '^]'.
+foobar
+complete
+^]
+telnet> quit
+Connection closed.
+
+Output:
+
+Socket: #<TCPSocket:0x98ec5ac>
+Socket: #<TCPSocket:0x98ec37c>
+#<TCPSocket:0x98ec37c>: foobar
+#<TCPSocket:0x98ec5ac>: goodbyeworld
+#<TCPSocket:0x98ec37c>: complete
