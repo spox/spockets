@@ -34,14 +34,14 @@ require 'socket'
 require 'spockets'
 spockets = Spockets::Spockets.new
 
-s = []
-2.times do |i|
-    se = TCPServer.new(3000 + i)
-    s << se.accept
-puts "Socket: #{s[i]}"
-    spockets.add(s[i]){|string| puts "#{s[i]}: #{string}" }
+se = TCPServer.new(3000)
+loop do |i|
+    s = se.accept
+    puts "Socket: #{s}"
+    spockets.add(s){|string| puts "#{s}: #{string}" }
 end
 sleep
+
 
 Connecting:
 
@@ -54,7 +54,7 @@ goodbyeworld
 telnet> quit
 Connection closed.
 
-> telnet 192.168.0.95 3001
+> telnet 192.168.0.95 3000
 Trying 192.168.0.95...
 Connected to 192.168.0.95.
 Escape character is '^]'.
