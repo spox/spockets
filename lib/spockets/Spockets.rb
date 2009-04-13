@@ -5,12 +5,13 @@ module Spockets
 
     class Spockets
 
-        # pool:: ActionPool if you would like to consolidate
-        # clean:: Clean string
+        # :pool:: ActionPool if you would like to consolidate
+        # :clean:: Clean string. Set to true for default or 
+        #          provide a block to clean strings
         # creates a new holder
-        def initialize(pool=nil, clean=false)
+        def initialize(args={})
             @sockets = {}
-            @watcher = Watcher.new(@sockets, clean, pool)
+            @watcher = Watcher.new(:sockets => @sockets, :clean => args[:clean], :pool => args[:pool])
         end
 
         # socket:: socket to listen to
@@ -20,13 +21,12 @@ module Spockets
         # for processing
         def add(socket, &block)
             raise DuplicateSocket.new(socket) if @sockets.has_key?(socket)
-            begin
-                stop
-            rescue NotRunning
-                # do nothing
-            end
             @sockets[socket] = [block]
-            start
+            begin
+                @watcher.sync
+            rescue NotRunning
+                start
+            end
         end
 
         # socket:: socket in list
@@ -42,44 +42,29 @@ module Spockets
         # Removes socket from list
         def remove(socket)
             raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
-            begin
-                stop
-            rescue NotRunning
-                # do nothing
-            end
             @sockets.delete(socket)
-            start
+            begin
+                @watcher.sync
+            rescue NotRunning
+                start
+            end
         end
 
         # start spockets
         def start
             raise AlreadyRunning.new if @watcher.running?
-            do_start
+            @watcher.start
         end
 
         # stop spockets
         def stop
             raise NotRunning.new unless @watcher.running?
-            do_stop
-        end
-
-        # shutdown and clean up
-        def shutdown
+            @watcher.stop
         end
 
         # currently watching sockets
         def running?
             !@watcher.nil? && @watcher.running?
-        end
-
-        private
-
-        def do_start
-            @watcher.start unless @watcher.running?
-        end
-
-        def do_stop
-            @watcher.stop if @watcher.running?
         end
         
     end
