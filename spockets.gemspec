@@ -11,6 +11,6 @@ spec = Gem::Specification.new do |s|
     s.files             = Dir['**/*']
     s.require_paths     = %w(lib)
     s.add_dependency 'ActionPool'
-    s.homepage          = %q(http://dev.modspox.com)
+    s.homepage          = %q(http://dev.modspox.com/trac/spockets)
     description         = []
 end

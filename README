@@ -35,7 +35,7 @@ require 'spockets'
 spockets = Spockets::Spockets.new
 
 se = TCPServer.new(3000)
-loop do |i|
+loop do
     s = se.accept
     puts "Socket: #{s}"
     spockets.add(s){|string| puts "#{s}: #{string}" }
