@@ -19,5 +19,19 @@ module Spockets
     
     class NotRunning < Exception
     end
+
+    class Resync < Exception
+    end
+
+    class MissingArgument < Exception
+        attr_reader :argument
+        def initialize(a)
+            @argument = a
+        end
+
+        def to_s
+            "Missing required argument: #{@argument}"
+        end
+    end
     
 end
