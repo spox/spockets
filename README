@@ -14,7 +14,7 @@ action can stay in one local pool.
 
 install (easy):
 
-gem install --source gems.github.com spockets
+gem install spockets
 
 install (less easy):
 
