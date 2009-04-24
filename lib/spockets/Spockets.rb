@@ -5,8 +5,6 @@ module Spockets
 
     class Spockets
 
-        alias :delete, :remove
-
         # :pool:: ActionPool if you would like to consolidate
         # :clean:: Clean string. Set to true for default or 
         #          provide a block to clean strings
@@ -80,6 +78,8 @@ module Spockets
         def include?(socket)
             @sockets.has_key?(socket)
         end
+        
+        alias :delete :remove
         
     end
 
