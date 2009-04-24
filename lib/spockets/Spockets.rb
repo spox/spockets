@@ -5,6 +5,8 @@ module Spockets
 
     class Spockets
 
+        alias :delete, :remove
+
         # :pool:: ActionPool if you would like to consolidate
         # :clean:: Clean string. Set to true for default or 
         #          provide a block to clean strings
@@ -49,6 +51,12 @@ module Spockets
                 start
             end
         end
+        
+        # remove all sockets
+        def clear
+            @sockets.clear
+            stop
+        end
 
         # start spockets
         def start
@@ -65,6 +73,12 @@ module Spockets
         # currently watching sockets
         def running?
             !@watcher.nil? && @watcher.running?
+        end
+        
+        # socket:: a socket
+        # check if the given socket is being watched
+        def include?(socket)
+            @sockets.has_key?(socket)
         end
         
     end
