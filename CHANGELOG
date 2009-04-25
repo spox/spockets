@@ -1,0 +1,8 @@
+0.0.5
+
+    * Added a delete alias
+    * Added an on_close method to set an action
+        to run when a closed socket is detected
+    * Added an include? method to check if a socket
+        is currently being watched
+    * Added clear method to remove all sockets
