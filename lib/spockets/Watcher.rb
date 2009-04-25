@@ -31,7 +31,7 @@ module Spockets
             @runner.join(0.1)
             @runner.raise Resync.new
             @runner.join(0.1)
-            @runner.kill unless @runner.alive?
+            @runner.kill unless @runner.nil? || @runner.alive?
             @runner = nil
         end
 
@@ -56,15 +56,15 @@ module Spockets
         def watch
             until(@stop)
                 begin
-                puts 'we are watching'
                     resultset = Kernel.select(@sockets.keys, nil, nil, nil)
                     for sock in resultset[0]
                         string = sock.gets
                         if(sock.closed? || string.nil?)
+                            @sockets[sock][:closed].call(sock) if @sockets[sock].has_key?(:closed)
                             @sockets.delete(sock)
                         else
                             string = clean? ? do_clean(string) : string
-                            @sockets[sock].each{|b| @pool.process{ b.call(string)}}
+                            @sockets[sock][:procs].each{|b| @pool.process{ b.call(string)}}
                         end
                     end
                 rescue Resync
