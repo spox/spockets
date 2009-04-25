@@ -23,8 +23,16 @@ cd spockets
 gem build spockets.gemspec
 gem install spockets-x.x.x.gem
 
-It has RDocs. They are where ever your rubygems installed them.
-They will probably be helpful to look over.
+It has RDocs. They are short, but will be helpful and you
+should really consider giving them a look. If you want to
+view them online, you can see them here:
+
+http://dev.modspox.com/~sine/spockets
+
+There is also a trac site. It has examples as well as
+a bug tracker. It's located at:
+
+http://dev.modspox.com/trac/spockets
 
 Examples are usually helpful, so here we go:
 
