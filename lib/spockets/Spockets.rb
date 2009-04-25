@@ -21,7 +21,8 @@ module Spockets
         # for processing
         def add(socket, &block)
             raise DuplicateSocket.new(socket) if @sockets.has_key?(socket)
-            @sockets[socket] = [block]
+            @sockets[socket] = {}
+            @sockets[socket][:procs] = [block]
             begin
                 @watcher.sync
             rescue NotRunning
@@ -35,7 +36,7 @@ module Spockets
         # socket to be executed when a new string is received
         def extra(socket, &block)
             raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
-            @sockets[socket] << block
+            @sockets[socket][:procs] << block
         end
 
         # socket:: socket to remove
@@ -48,6 +49,15 @@ module Spockets
             rescue NotRunning
                 start
             end
+        end
+        
+        # socket:: socket to add close action
+        # block:: action to perform on socket close
+        # Executes block when socket has been closed. Ideal
+        # for reconnection needs
+        def on_close(socket, &block)
+            raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
+            @sockets[socket][:closed] = block
         end
         
         # remove all sockets
