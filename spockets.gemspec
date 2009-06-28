@@ -7,7 +7,7 @@ spec = Gem::Specification.new do |s|
     s.platform          = Gem::Platform::RUBY
     s.has_rdoc          = true
     s.rdoc_options      = %w(--title Spockets --main README.rdoc --line-numbers)
-    s.extra_rdoc_files  = %w(README)
+    s.extra_rdoc_files  = %w(README.rdoc)
     s.files             = %w(README.rdoc CHANGELOG lib/spockets.rb lib/spockets/Exceptions.rb lib/spockets/Spockets.rb lib/spockets/Watcher.rb)
     s.require_paths     = %w(lib)
     s.add_dependency 'ActionPool'
