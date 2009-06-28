@@ -12,16 +12,21 @@ blocks so you don't end up having to wait on slow blocks. You
 can even provide your own pool for spockets to use, so all the
 action can stay in one local pool.
 
-install (easy):
+install (stable):
 
-gem install spockets
+    gem install spockets
 
-install (less easy):
+install (unstable):
 
-git clone http://github.com/spox/spockets.git
-cd spockets
-gem build spockets.gemspec
-gem install spockets-x.x.x.gem
+    gem sources -a http://gems.github.com
+    gem install spox-spockets
+
+or
+
+    git clone http://github.com/spox/spockets.git
+    cd spockets
+    gem build spockets.gemspec
+    gem install ./
 
 It has RDocs. They are short, but will be helpful and you
 should really consider giving them a look. If you want to
@@ -38,44 +43,44 @@ Examples are usually helpful, so here we go:
 
 Code:
 
-require 'socket'
-require 'spockets'
-spockets = Spockets::Spockets.new
+    require 'socket'
+    require 'spockets'
+    spockets = Spockets::Spockets.new
 
-se = TCPServer.new(3000)
-loop do
-    s = se.accept
-    puts "Socket: #{s}"
-    spockets.add(s){|string| puts "#{s}: #{string}" }
-end
-sleep
+    se = TCPServer.new(3000)
+    loop do
+        s = se.accept
+        puts "Socket: #{s}"
+        spockets.add(s){|string| puts "#{s}: #{string}" }
+    end
+    sleep
 
 
 Connecting:
 
-> telnet 192.168.0.95 3000
-Trying 192.168.0.95...
-Connected to 192.168.0.95.
-Escape character is '^]'.
-goodbyeworld
-^]
-telnet> quit
-Connection closed.
+    > telnet 192.168.0.95 3000
+    Trying 192.168.0.95...
+    Connected to 192.168.0.95.
+    Escape character is '^]'.
+    goodbyeworld
+    ^]
+    telnet> quit
+    Connection closed.
 
-> telnet 192.168.0.95 3000
-Trying 192.168.0.95...
-Connected to 192.168.0.95.
-Escape character is '^]'.
-foobar
-complete
-^]
-telnet> quit
-Connection closed.
+    > telnet 192.168.0.95 3000
+    Trying 192.168.0.95...
+    Connected to 192.168.0.95.
+    Escape character is '^]'.
+    foobar
+    complete
+    ^]
+    telnet> quit
+    Connection closed.
 
 Output:
 
-Socket: #<TCPSocket:0x98ec5ac>
-Socket: #<TCPSocket:0x98ec37c>
-#<TCPSocket:0x98ec37c>: foobar
-#<TCPSocket:0x98ec5ac>: goodbyeworld
-#<TCPSocket:0x98ec37c>: complete
+    Socket: #<TCPSocket:0x98ec5ac>
+    Socket: #<TCPSocket:0x98ec37c>
+    #<TCPSocket:0x98ec37c>: foobar
+    #<TCPSocket:0x98ec5ac>: goodbyeworld
+    #<TCPSocket:0x98ec37c>: complete
