@@ -64,7 +64,7 @@ module Spockets
                             @sockets.delete(sock)
                         else
                             string = clean? ? do_clean(string) : string
-                            @sockets[sock][:procs].each{|b| @pool.process{ b.call(string)}}
+                            process(string.dup, sock)
                         end
                     end
                 rescue Resync
@@ -72,6 +72,10 @@ module Spockets
                 end
             end
             @runner = nil
+        end
+
+        def process(string, sock)
+            @sockets[sock][:procs].each{|b| @pool.process{ b.call(string)}}
         end
 
         def do_clean(string)
