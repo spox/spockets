@@ -15,28 +15,26 @@ module Spockets
         end
 
         # socket:: socket to listen to
+        # data:: data to be passed to block. NOTE: string from 
+        # socket will be prepended to argument list
         # block:: block to execute when activity is received
         # Adds a socket to the list to listen to. When a string
         # is received on the socket, it will send it to the block
         # for processing
-        def add(socket, &block)
-            raise DuplicateSocket.new(socket) if @sockets.has_key?(socket)
-            @sockets[socket] = {}
-            @sockets[socket][:procs] = [block]
+        def add(socket, *data, &block)
+            raise ArgumentError.new('Block must be supplied') unless block_given?
+            raise ArgumentError.new('Block must allow at least one argument') if block.arity == 0
+            if(block.arity > 0 && block.arity != (data.size + 1))
+                raise ArgumentError.new('Invalid number of arguments for block')
+            end
+            @sockets[socket] ||= {}
+            @sockets[socket][:procs] ||= []
+            @sockets[socket][:procs] << [data, block]
             begin
                 @watcher.sync
             rescue NotRunning
                 start
             end
-        end
-
-        # socket:: socket in list
-        # block:: additional block to execute
-        # This will add additional blocks to the associated
-        # socket to be executed when a new string is received
-        def extra(socket, &block)
-            raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
-            @sockets[socket][:procs] << block
         end
 
         # socket:: socket to remove
@@ -52,12 +50,20 @@ module Spockets
         end
         
         # socket:: socket to add close action
+        # data:: data to be passed to the block. NOTE: socket
+        # will be prepended to argument list
         # block:: action to perform on socket close
         # Executes block when socket has been closed. Ideal
         # for reconnection needs
-        def on_close(socket, &block)
+        def on_close(socket, *data, &block)
             raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
-            @sockets[socket][:closed] = block
+            raise ArgumentError.new('Block must be supplied') unless block_given?
+            raise ArgumentError.new('Block must allow at least one argument') if block.arity == 0
+            if(block.arity > 0 && block.arity != (data.size + 1))
+                raise ArgumentError.new('Invalid number of arguments for block')
+            end
+            @sockets[socket][:closed] ||= []
+            @sockets[socket][:closed] << [data, block]
         end
         
         # remove all sockets
