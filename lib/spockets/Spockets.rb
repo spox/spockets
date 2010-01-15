@@ -11,7 +11,32 @@ module Spockets
         # creates a new holder
         def initialize(args={})
             @sockets = {}
+            @sync = true
             @watcher = Watcher.new(:sockets => @sockets, :clean => args[:clean], :pool => args[:pool])
+        end
+        
+        # Will sockets be resynced
+        def sync?
+            @sync.dup
+        end
+        
+        # b:: boolean
+        # Set whether resync on addition
+        def sync=(b)
+            @sync = b != false
+        end
+
+        # b:: boolean to force sync status to true
+        # Resync sockets in Watcher
+        def sync(b = nil)
+            @sync = b != false unless b.nil?
+            if(@sync)
+                begin
+                    @watcher.sync
+                rescue NotRunning
+                    start
+                end
+            end
         end
 
         # socket:: socket to listen to
@@ -30,11 +55,7 @@ module Spockets
             @sockets[socket] ||= {}
             @sockets[socket][:procs] ||= []
             @sockets[socket][:procs] << [data, block]
-            begin
-                @watcher.sync
-            rescue NotRunning
-                start
-            end
+            sync
         end
 
         # socket:: socket to remove
@@ -42,11 +63,7 @@ module Spockets
         def remove(socket)
             raise UnknownSocket.new(socket) unless @sockets.has_key?(socket)
             @sockets.delete(socket)
-            begin
-                @watcher.sync
-            rescue NotRunning
-                start
-            end
+            sync
         end
         
         # socket:: socket to add close action
