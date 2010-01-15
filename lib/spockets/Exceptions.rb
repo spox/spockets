@@ -1,37 +1,19 @@
 module Spockets
-
-    class DuplicateSocket < Exception
-        attr_reader :socket
-        def initialize(s)
-            @socket = s
-        end
-    end
     
-    class UnknownSocket < Exception
+    class UnknownSocket < StandardError
         attr_reader :socket
         def initialize(s)
             @socket = s
         end
     end
 
-    class AlreadyRunning < Exception
+    class AlreadyRunning < StandardError
     end
     
-    class NotRunning < Exception
+    class NotRunning < StandardError
     end
 
-    class Resync < Exception
-    end
-
-    class MissingArgument < Exception
-        attr_reader :argument
-        def initialize(a)
-            @argument = a
-        end
-
-        def to_s
-            "Missing required argument: #{@argument}"
-        end
+    class Resync < StandardError
     end
     
 end
