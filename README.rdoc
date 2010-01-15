@@ -46,43 +46,20 @@ Code:
     require 'spockets'
     spockets = Spockets::Spockets.new
 
-    se = TCPServer.new(3000)
-    loop do
-        s = se.accept
-        puts "Socket: #{s}"
-        spockets.add(s){|string| puts "#{s}: #{string}" }
-    end
-    sleep
+    server = TCPServer.new('localhost', 4000)
+    socket = TCPSocket.new('localhost', 4000)
+    rsocket = server.accept
+    output = []
+    spockets.add(rsocket){|s|output << s.strip}
+    spockets.add(rsocket, 'data'){|s, d| output << "#{d}: #{s.strip}"}
+    spockets.on_close(rsocket){|s| output << "closed: #{s}"}
+    socket.puts "fubar"
+    sleep(0.01)
+    socket.close
+    sleep(0.01)
+    p output
 
-
-Connecting:
-
-    > telnet 192.168.0.95 3000
-    Trying 192.168.0.95...
-    Connected to 192.168.0.95.
-    Escape character is '^]'.
-    goodbyeworld
-    ^]
-    telnet> quit
-    Connection closed.
-
-    > telnet 192.168.0.95 3000
-    Trying 192.168.0.95...
-    Connected to 192.168.0.95.
-    Escape character is '^]'.
-    foobar
-    complete
-    ^]
-    telnet> quit
-    Connection closed.
-
-Output:
-
-    Socket: #<TCPSocket:0x98ec5ac>
-    Socket: #<TCPSocket:0x98ec37c>
-    #<TCPSocket:0x98ec37c>: foobar
-    #<TCPSocket:0x98ec5ac>: goodbyeworld
-    #<TCPSocket:0x98ec37c>: complete
+    => ["fubar", "data: fubar", "closed: #<TCPSocket:0xb7637bdc>"]
 
 == Last remarks
 
