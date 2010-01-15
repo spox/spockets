@@ -11,7 +11,6 @@ spec = Gem::Specification.new do |s|
     s.files             = %w(README.rdoc CHANGELOG lib/spockets.rb lib/spockets/Exceptions.rb lib/spockets/Spockets.rb lib/spockets/Watcher.rb)
     s.require_paths     = %w(lib)
     s.add_dependency 'actionpool', '~> 0.2.3'
-    s.add_dependency 'splib', '~> 1.4'
     s.homepage          = %q(http://github.com/spox/spockets)
     s.description = 'Socket helper library'
 end
