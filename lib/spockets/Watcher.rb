@@ -35,14 +35,16 @@ module Spockets
         def stop
             if(@runner.nil? && @stop)
                 raise NotRunning.new
-            elsif(@runner.nil? || @runner.dead?)
+            elsif(@runner.nil? || !@runner.alive?)
                 @stop = true
                 @runner = nil
             else
                 @stop = true
-                @runner.raise Resync.new if @runner.sleep?
-                @runner.join(0.05)
-                @runner.kill if @runner && @runner.alive?
+                if(@runner)
+                    @runner.raise Resync.new if @runner.alive? && @runner.stop?
+                    @runner.join(0.05) if @runner
+                    @runner.kill if @runner && @runner.alive?
+                end
                 @runner = nil
             end
             nil
@@ -82,7 +84,7 @@ module Spockets
                             @sockets.delete(sock)
                         else
                             string = clean? ? do_clean(string) : string
-                            process(string.dup, sock.dup)
+                            process(string.dup, sock)
                         end
                     end
                 rescue Resync
@@ -97,7 +99,7 @@ module Spockets
         def process(string, sock)
             @sockets[sock][:procs].each do |pr|
                 @pool.process do
-                    pr[1].call([string]+pr[0])
+                    pr[1].call(*([string]+pr[0]))
                 end
             end
         end
