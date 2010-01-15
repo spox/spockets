@@ -54,7 +54,6 @@ Code:
     spockets.add(rsocket, 'data'){|s, d| output << "#{d}: #{s.strip}"}
     spockets.on_close(rsocket){|s| output << "closed: #{s}"}
     socket.puts "fubar"
-    sleep(0.01)
     socket.close
     sleep(0.01)
     p output
@@ -67,5 +66,5 @@ If you find any bugs, please report them through {github}[http://github.com/spox
 
 == License
 
-    ActionPool is licensed under the LGPLv3
+    Spockets is licensed under the LGPLv3
     Copyright (c) 2009 spox <spox@modspox.com>
