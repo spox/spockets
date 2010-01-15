@@ -1,4 +1,4 @@
-== Spockets ==
+== Spockets
 
 Spockets is a simple library for dealing with multiple sockets.
 You supply a socket, and one or more blocks to
@@ -6,38 +6,37 @@ execute, and Spockets will make sure those blocks get
 executed when something comes in over the wire. It's just
 that simple.
 
-There is one requirement for spockets and that is the ActionPool.
-This just allows spockets to use a thread pool for executing
-blocks so you don't end up having to wait on slow blocks. You
-can even provide your own pool for spockets to use, so all the
-action can stay in one local pool.
+This library makes use of a thread pool for running user
+defined blocks. This setup allows us to use a single thread
+for socket monitoring, as well as prevents long running blocks
+from delaying everybody else.
 
-install (stable):
+=== install (easy):
 
-    gem install spockets
+    gem install actionpool
 
-install (unstable):
+=== install (less easy):
 
-    gem sources -a http://gems.github.com
-    gem install spox-spockets
-
-or
-
-    git clone http://github.com/spox/spockets.git
-    cd spockets
-    gem build spockets.gemspec
+    git clone http://github.com/spox/actionpool.git
+    cd actionpool
+    gem build *.gemspec
     gem install ./
 
+=== install (less easy that's a little easier)
+
+{rip}[http://hellorip.com/about.html] makes it easy to install directly from a github repository.
+
+=== Testing
+
+ActionPool is currently tested on:
+
+* Ruby 1.8.6-p383
+* Ruby 1.8.7-p248
+* Ruby 1.9.1-p376
+* JRuby 1.4.0
+
 It has RDocs. They are short, but will be helpful and you
-should really consider giving them a look. If you want to
-view them online, you can see them here:
-
-http://dev.modspox.com/~sine/spockets
-
-There is also a trac site. It has examples as well as
-a bug tracker. It's located at:
-
-http://dev.modspox.com/trac/spockets
+should really consider giving them a look.
 
 Examples are usually helpful, so here we go:
 
@@ -84,3 +83,12 @@ Output:
     #<TCPSocket:0x98ec37c>: foobar
     #<TCPSocket:0x98ec5ac>: goodbyeworld
     #<TCPSocket:0x98ec37c>: complete
+
+== Last remarks
+
+If you find any bugs, please report them through {github}[http://github.com/spox/spockets/issues]. If you are in need of any help, you can generally find me on DALnet and Freenode.
+
+== License
+
+    ActionPool is licensed under the LGPLv3
+    Copyright (c) 2009 spox <spox@modspox.com>
