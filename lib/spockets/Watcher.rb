@@ -1,5 +1,4 @@
 require 'actionpool'
-require 'actionpool/Exceptions'
 require 'iconv'
 
 module Spockets
@@ -9,8 +8,9 @@ module Spockets
         # :clean:: clean UTF8 strings or provide block to run on every read string
         # :pool:: ActionPool to use
         # Creates a new watcher for sockets
-        def initialize(args)
-            raise MissingArgument.new(:sockets) unless args[:sockets]
+        def initialize(args={})
+            raise ArgumentError.new('Expecting argument hash') unless args.is_a?(Hash)
+            raise ArgumentError.new('Missing required argument :sockets') unless args[:sockets] && args[:sockets].is_a?(Hash)
             @sockets = args[:sockets]
             @runner = nil
             @clean = args[:clean] && (args[:clean].is_a?(Proc) || args[:clean].is_a?(TrueClass)) ? args[:clean] : nil
@@ -21,18 +21,31 @@ module Spockets
 
         # start the watcher
         def start
-            @stop = false
-            @runner = Thread.new{watch} if @runner.nil? && @sockets.size > 0
+            if(@sockets.size < 0)
+                raise 'No sockets available for listening'
+            elsif(!@runner.nil? && @runner.alive?)
+                raise AlreadyRunning.new
+            else
+                @stop = false
+                @runner = Thread.new{watch}
+            end
         end
 
         # stop the watcher
         def stop
-            @stop = true
-            @runner.join(0.1)
-            @runner.raise Resync.new
-            @runner.join(0.1)
-            @runner.kill unless @runner.nil? || @runner.alive?
-            @runner = nil
+            if(@runner.nil? && @stop)
+                raise NotRunning.new
+            elsif(@runner.nil? || @runner.dead?)
+                @stop = true
+                @runner = nil
+            else
+                @stop = true
+                @runner.raise Resync.new if @runner.sleep?
+                @runner.join(0.05)
+                @runner.kill if @runner && @runner.alive?
+                @runner = nil
+            end
+            nil
         end
 
         # is the watcher running?
@@ -52,7 +65,8 @@ module Spockets
         end
         
         private
-        
+
+        # Watch the sockets and send strings for processing
         def watch
             until(@stop)
                 begin
@@ -60,11 +74,15 @@ module Spockets
                     for sock in resultset[0]
                         string = sock.gets
                         if(sock.closed? || string.nil?)
-                            @sockets[sock][:closed].call(sock) if @sockets[sock].has_key?(:closed)
+                            if(@sockets[sock][:closed])
+                                @sockets[sock][:closed].each do |pr|
+                                    pr[1].call(*([sock]+pr[0]))
+                                end
+                            end
                             @sockets.delete(sock)
                         else
                             string = clean? ? do_clean(string) : string
-                            process(string.dup, sock)
+                            process(string.dup, sock.dup)
                         end
                     end
                 rescue Resync
@@ -74,10 +92,18 @@ module Spockets
             @runner = nil
         end
 
+        # string:: String from socket
+        # sock:: Socket string originated from
         def process(string, sock)
-            @sockets[sock][:procs].each{|b| @pool.process{ b.call(string)}}
+            @sockets[sock][:procs].each do |pr|
+                @pool.process do
+                    pr[1].call([string]+pr[0])
+                end
+            end
         end
 
+        # string:: String to be cleaned
+        # Applies clean block to string
         def do_clean(string)
             unless(@ic.nil?)
                 return untaint(string)
@@ -85,7 +111,9 @@ module Spockets
                 return @clean.call(string)
             end
         end
-        
+
+        # s:: string
+        # Attempt to clean up string
         def untaint(s)
             @ic.iconv(s + ' ')[0..-2]
         end
