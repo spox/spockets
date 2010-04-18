@@ -1,5 +1,4 @@
 require 'actionpool'
-require 'iconv'
 
 module Spockets
     class Watcher
@@ -15,7 +14,12 @@ module Spockets
             @runner = nil
             @clean = args[:clean] && (args[:clean].is_a?(Proc) || args[:clean].is_a?(TrueClass)) ? args[:clean] : nil
             @pool = args[:pool] && args[:pool].is_a?(ActionPool::Pool) ? args[:pool] : ActionPool::Pool.new
-            @ic = @clean && @clean.is_a?(TrueClass) ? Iconv.new('UTF-8//IGNORE', 'UTF-8') : nil
+            if(@clean.is_a?(TrueClass))
+                require 'iconv'
+                @ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+            else
+                @ic = nil
+            end
             @stop = true
         end
 
