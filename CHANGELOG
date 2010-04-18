@@ -1,3 +1,5 @@
+0.1.1
+    * Only load Iconv library when it will actually be used
 0.0.6
     * Fixed bug exposed when extremely fast input
       is received.
