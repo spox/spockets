@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    spockets (0.1.1)
+      actionpool (~> 0.2.3)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    actionpool (0.2.3)
+      splib (~> 1.4)
+    splib (1.4.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  spockets!
