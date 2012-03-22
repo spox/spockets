@@ -1,5 +1,5 @@
-require 'spockets/Exceptions'
-require 'spockets/Watcher'
+require 'spockets/exceptions'
+require 'spockets/watcher'
 
 module Spockets
 

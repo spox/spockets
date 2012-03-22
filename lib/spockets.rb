@@ -1,2 +1,2 @@
 require 'rubygems'
-require 'spockets/Spockets'
+require 'spockets/spockets'
