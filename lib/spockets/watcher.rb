@@ -5,7 +5,6 @@ module Spockets
 
     # :sockets:: socket list
     # :clean:: clean UTF8 strings or provide block to run on every read string
-    # :pool:: ActionPool to use
     # Creates a new watcher for sockets
     def initialize(args={})
       raise ArgumentError.new('Expecting argument hash') unless args.is_a?(Hash)
@@ -13,7 +12,7 @@ module Spockets
       @sockets = args[:sockets]
       @runner = nil
       @clean = args[:clean] && (args[:clean].is_a?(Proc) || args[:clean].is_a?(TrueClass)) ? args[:clean] : nil
-      @pool = args[:pool] && args[:pool].is_a?(ActionPool::Pool) ? args[:pool] : ActionPool::Pool.new
+      @pool = args[:pool] || ActionPool::Pool.new
       if(@clean.is_a?(TrueClass))
         require 'iconv'
         @ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
@@ -102,7 +101,7 @@ module Spockets
     # sock:: Socket string originated from
     def process(string, sock)
       @sockets[sock][:procs].each do |pr|
-        @pool.process do
+        @pool.queue do
           pr[1].call(*([string]+pr[0]))
         end
       end

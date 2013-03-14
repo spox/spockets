@@ -5,14 +5,13 @@ module Spockets
 
   class Spockets
 
-    # :pool:: ActionPool if you would like to consolidate
     # :clean:: Clean string. Set to true for default or 
     #      provide a block to clean strings
     # creates a new holder
     def initialize(args={})
       @sockets = {}
       @sync = true
-      @watcher = Watcher.new(:sockets => @sockets, :clean => args[:clean], :pool => args[:pool])
+      @watcher = Watcher.new(:sockets => @sockets, :clean => args[:clean])
     end
     
     # Will sockets be resynced

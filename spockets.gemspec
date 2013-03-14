@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = %w(--title Spockets --main README.rdoc --line-numbers)
   s.files = Dir.glob(File.join(File.dirname(__FILE__), '**', '*'))
   s.require_paths = %w(lib)
-  s.add_dependency 'actionpool', '~> 0.2.3'
+  s.add_dependency 'actionpool'
   s.homepage      = %q(http://github.com/spox/spockets)
   s.description = 'Socket helper library'
 end
